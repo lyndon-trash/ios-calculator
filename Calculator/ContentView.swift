@@ -19,31 +19,42 @@ struct ContentView: View {
                 .background(Color.DisplayGray)
             
             HStack(spacing: 1) {
-                Presser(value: "AC")
-                Presser()
-                Presser()
-                Presser()
+                Presser(.ac)
+                Presser(.nega)
+                Presser(.modulo)
+                Presser(.opDiv)
             }
             
             HStack(spacing: 1) {
-                Presser()
-                Presser()
-                Presser()
-                Presser()
+                Presser(.n7)
+                Presser(.n8)
+                Presser(.n9)
+                Presser(.opMul)
             }
             
             HStack(spacing: 1) {
-                Presser()
-                Presser()
-                Presser()
-                Presser()
+                Presser(.n4)
+                Presser(.n5)
+                Presser(.n6)
+                Presser(.opMin)
             }
             
             HStack(spacing: 1) {
-                Presser()
-                Presser()
-                Presser()
-                Presser()
+                Presser(.n1)
+                Presser(.n2)
+                Presser(.n3)
+                Presser(.opPlus)
+            }
+            
+            HStack(spacing: 1) {
+                HStack {
+                    Presser(.n0)
+                }
+                
+                HStack(spacing: 1) {
+                    Presser(.dot)
+                    Presser(.opEq)
+                }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -53,17 +64,25 @@ struct ContentView: View {
 
 struct Presser: View {
     
-    var value: String?
+    let value: ButtonType
+    
+    init(_ buttonType: ButtonType) {
+        value = buttonType
+    }
+    
+    init() {
+        value = .ac
+    }
     
     var body: some View {
         Button(action: {
             
         }) {
-            Text(value ?? "??")
+            Text(value.display)
                 .foregroundColor(.white)
                 .font(.largeTitle)
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.BotGray)
+            .background(value.color)
     }
 }
 
