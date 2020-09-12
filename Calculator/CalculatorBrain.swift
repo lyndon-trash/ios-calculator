@@ -27,6 +27,8 @@ class CalculatorBrain: ObservableObject {
     func press(button: ButtonType) {
         if button == .ac {
             reset()
+        } else if button == .dot {
+            dotPressed()
         } else if button == .nega {
             negationPressed()
         } else if button == .percent {
@@ -45,6 +47,13 @@ class CalculatorBrain: ObservableObject {
         lastOperation = nil
         lastValue = 0.0
         accumulatedNumber = "0"
+    }
+    
+    private func dotPressed() {
+        var newString = accumulatedNumber.replacingOccurrences(of: ".", with: "")
+        newString.append(".")
+        
+        accumulatedNumber = newString
     }
     
     private func percentPressed() {
