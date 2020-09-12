@@ -12,10 +12,11 @@ class CalculatorBrain: ObservableObject {
     
     static let instance = CalculatorBrain()
     
-    @Published var lastPressed: ButtonType = .n0
+    @Published var accumulatedNumber = "0"
     
-    var isFinishedTypingNumber = true
-    var accumulatedNumber = "0"
+    private var isFinishedTypingNumber = true
+    private var lastOperation: ButtonType?
+    private var lastValue: Double = 0.0
     
     private init() {}
     
@@ -24,15 +25,68 @@ class CalculatorBrain: ObservableObject {
     }
     
     func press(button: ButtonType) {
-        lastPressed = button
+        if button == .ac {
+            reset()
+        } else if button.isNumeric {
+            numericButtonPressed(button: button)
+        } else if button.isOperation {
+            operationButtonPressed(button: button)
+        } else if button == .opEq {
+            equalsPressed()
+        }
+    }
+    
+    private func reset() {
+        isFinishedTypingNumber = true
+        lastOperation = nil
+        lastValue = 0.0
+        accumulatedNumber = "0"
+    }
+    
+    private func numericButtonPressed(button: ButtonType) {
+        assert(button.isNumeric)
         
         if isFinishedTypingNumber {
             accumulatedNumber = button.display
             isFinishedTypingNumber = false
         } else {
-            accumulatedNumber.append(button.display)
+            accumulatedNumber += button.display
         }
     }
+    
+    private func equalsPressed() {
+        performLastOperation()
+        accumulatedNumber = "\(lastValue)"
+    }
+    
+    private func operationButtonPressed(button: ButtonType) {
+        assert(button.isOperation)
+        
+        if lastOperation != nil {
+            performLastOperation()
+        } else {
+            lastValue = Double(accumulatedNumber)!
+            lastOperation = button
+        }
+        
+        isFinishedTypingNumber = true
+    }
+    
+    private func performLastOperation() {
+        if let prevOp = lastOperation {
+            switch prevOp {
+            case .opPlus:
+                lastValue = lastValue + Double(accumulatedNumber)!
+            case .opMin:
+                lastValue = lastValue - Double(accumulatedNumber)!
+            case .opDiv:
+                lastValue = lastValue / Double(accumulatedNumber)!
+            default:
+                lastValue = Double(accumulatedNumber)! * lastValue
+            }
+        }
+    }
+    
 }
 
 enum ButtonType {
@@ -80,15 +134,6 @@ enum ButtonType {
         }
     }
     
-    var isNumber: Bool {
-        switch self {
-        case .n1, .n2, .n3, .n4, .n5, .n6, .n7, .n8, .n9, .n0:
-            return true
-        default:
-            return false
-        }
-    }
-    
     var color: Color {
         switch self {
         case .ac, .nega, .modulo:
@@ -100,7 +145,35 @@ enum ButtonType {
         }
     }
     
+    var isNumber: Bool {
+        switch self {
+        case .n1, .n2, .n3, .n4, .n5, .n6, .n7, .n8, .n9, .n0:
+            return true
+        default:
+            return false
+        }
+    }
+    
+    var isNumeric: Bool {
+        switch self {
+        case .n1, .n2, .n3, .n4, .n5, .n6, .n7, .n8, .n9, .n0:
+            return true
+        default:
+            return false
+        }
+    }
+    
+    var isOperation: Bool {
+        switch self {
+        case .opDiv, .opMul, .opMin, .opPlus:
+            return true
+        default:
+            return false
+        }
+    }
+    
     case n1, n2, n3, n4, n5, n6, n7, n8, n9, n0
-    case opDiv, opMul, opMin, opPlus, opEq
+    case opDiv, opMul, opMin, opPlus
+    case opEq
     case ac, dot, nega, modulo
 }
