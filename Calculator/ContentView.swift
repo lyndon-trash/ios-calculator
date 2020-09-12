@@ -9,9 +9,12 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @ObservedObject var calculator = CalculatorBrain.instance
+    
     var body: some View {
         VStack(spacing: 1) {
-            Text("0")
+            Text(calculator.display)
                 .font(.largeTitle)
                 .fontWeight(.light)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -60,11 +63,16 @@ struct ContentView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .edgesIgnoringSafeArea(.all)
     }
+    
+    func pressed(buttonType: ButtonType) {
+        
+    }
 }
 
 struct Presser: View {
     
     let value: ButtonType
+    let calculatorBrain = CalculatorBrain.instance
     
     init(_ buttonType: ButtonType) {
         value = buttonType
@@ -76,7 +84,7 @@ struct Presser: View {
     
     var body: some View {
         Button(action: {
-            
+            self.calculatorBrain.press(button: self.value)
         }) {
             Text(value.display)
                 .foregroundColor(.white)
