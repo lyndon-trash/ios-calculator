@@ -27,7 +27,11 @@ class CalculatorBrain: ObservableObject {
     func press(button: ButtonType) {
         if button == .ac {
             reset()
-        } else if button.isNumeric {
+        } else if button == .nega {
+            negationPressed()
+        } else if button == .percent {
+            percentPressed()
+        } else if button.isNumber {
             numericButtonPressed(button: button)
         } else if button.isOperation {
             operationButtonPressed(button: button)
@@ -43,8 +47,18 @@ class CalculatorBrain: ObservableObject {
         accumulatedNumber = "0"
     }
     
+    private func percentPressed() {
+        let current = Double(accumulatedNumber)! * (0.01)
+        accumulatedNumber = "\(current)"
+    }
+    
+    private func negationPressed() {
+        let current = Double(accumulatedNumber)! * (-1)
+        accumulatedNumber = "\(current)"
+    }
+    
     private func numericButtonPressed(button: ButtonType) {
-        assert(button.isNumeric)
+        assert(button.isNumber)
         
         if isFinishedTypingNumber {
             accumulatedNumber = button.display
@@ -81,8 +95,10 @@ class CalculatorBrain: ObservableObject {
                 lastValue = lastValue - Double(accumulatedNumber)!
             case .opDiv:
                 lastValue = lastValue / Double(accumulatedNumber)!
+            case .opMul:
+                lastValue = lastValue * Double(accumulatedNumber)!
             default:
-                lastValue = Double(accumulatedNumber)! * lastValue
+                lastValue = Double(accumulatedNumber)! * 1
             }
         }
     }
@@ -126,9 +142,9 @@ enum ButtonType {
         case .opMul:
             return "x"
         case .opDiv:
-            return "%"
-        case .modulo:
-            return "%"
+            return "/"
+        case .percent:
+            return "P"
         case .dot:
             return "."
         }
@@ -136,7 +152,7 @@ enum ButtonType {
     
     var color: Color {
         switch self {
-        case .ac, .nega, .modulo:
+        case .ac, .nega, .percent:
             return .TopGray
         case .opDiv, .opMul, .opMin, .opPlus, .opEq:
             return .Orange
@@ -146,15 +162,6 @@ enum ButtonType {
     }
     
     var isNumber: Bool {
-        switch self {
-        case .n1, .n2, .n3, .n4, .n5, .n6, .n7, .n8, .n9, .n0:
-            return true
-        default:
-            return false
-        }
-    }
-    
-    var isNumeric: Bool {
         switch self {
         case .n1, .n2, .n3, .n4, .n5, .n6, .n7, .n8, .n9, .n0:
             return true
@@ -175,5 +182,5 @@ enum ButtonType {
     case n1, n2, n3, n4, n5, n6, n7, n8, n9, n0
     case opDiv, opMul, opMin, opPlus
     case opEq
-    case ac, dot, nega, modulo
+    case ac, dot, nega, percent
 }

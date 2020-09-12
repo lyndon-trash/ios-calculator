@@ -24,7 +24,7 @@ struct ContentView: View {
             HStack(spacing: 1) {
                 Presser(.ac)
                 Presser(.nega)
-                Presser(.modulo)
+                Presser(.percent)
                 Presser(.opDiv)
             }
             
